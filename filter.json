@@ -1,0 +1,91 @@
+{
+  "changeMap": {
+    "true": "yes",
+    "false": "0",
+    "M": "Male"
+  },
+  "filterMap": {
+    "filter1": "payload.application.applicants[?(@.applicantType=='APPLICANT')].contactId",
+    "filter2": "payload.application.applicants[?(@.applicantType=='APPLICANT')].contactId"
+  },
+  "elementList": [
+    {
+      "concat": [
+        "payload.contacts[?(@.id=='filter1')].person.names[0].firstName",
+        "payload.contacts[?(@.id=='filter1')].person.names[0].surName"
+      ],
+      "mapping": "/primary/fname"
+    },
+    {
+      "concat": [
+        "payload.device.id",
+        "payload.contacts[?(@.id=='filter2')].person.names[0].surName"
+      ],
+      "mapping": "/primary/lname"
+    },
+    {
+      "input": "payload.contacts[?(@.id=='filter2')].person.names[0].id",
+      "mapping": "/primary/id"
+    },
+    {
+      "input": "payload.device.ipAddress",
+      "mapping": "/primary/ip",
+      "flag": "changeit",
+      "mandatory": true,
+      "defaultValue": "I am ip value"
+    },
+    {
+      "mapping": "/primary/contantField",
+      "constant": "I am a constand field"
+    },
+    {
+      "input": "payload.device.ipMain",
+      "mapping": "/primary/ipDefault",
+      "defaultValue": "Defaulted value"
+    },
+    {
+      "concat": [
+        "payload.contacts[?(@.id=='filter1')].addresses[0].street",
+        "payload.contacts[?(@.id=='filter1')].addresses[0].street2"
+
+      ],
+      "mapping": "/primary/area/0/street"
+    },
+    {
+      "concat": [
+        "payload.contacts[?(@.id=='filter1')].addresses[0].postTown",
+        "payload.contacts[?(@.id=='filter2')].addresses[0].countryCode"
+      ],
+      "mapping": "/primary/area/0/posttown"
+    },
+    {
+      "input": "payload.device.ipMain",
+      "mapping": "/primary/ip1",
+      "mandatory": true,
+      "defaultValue": "I am some value"
+    },
+    {
+      "mapping": "/primary/something/something",
+      "constant": "I am a constand field2"
+    },
+    {
+      "input": "payload.contacts[?(@.id=='filter2')].telephones[0].id",
+      "flag": "changeIt",
+      "mapping": "/primary/telephone/0/id"
+    },
+    {
+      "input": "payload.contacts[?(@.id=='filter2')].telephones[0].number",
+      "mapping": "/primary/telephone/0/number"
+    },
+    {
+      "input": "payload.contacts[?(@.id=='filter2')].telephones[0].internationalCode",
+      "mapping": "/primary/telephone/0/intifenfi"
+    },
+    {
+      "input": "payload.contacts[?(@.id=='filter2')].telephones[0].phoneIdentifier",
+      "mapping": "/primary/telephone/0/kuchtohai"
+    }
+  ]
+}
+
+

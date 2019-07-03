@@ -1,0 +1,127 @@
+{
+  "header": {
+    "tenantId": "TENANT1",
+    "requestType": "Simulator",
+    "clientReferenceId": "APPID_201708311439",
+    "messageTime": "2017-10-04T14:20:04Z",
+    "options": {}
+  },
+  "payload": {
+    "contacts": [
+      {
+        "id": "MAINCONTACT_1",
+        "person": {
+          "typeOfPerson": "APPLICANT",
+          "names": [
+            {
+              "id": "MAINPERSONNAME_1",
+              "type": "false",
+              "firstName": "M",
+              "surName": "SMITH"
+            }
+          ]
+        },
+        "addresses": [
+          {
+            "id": "MAINAPPADDRESS_1",
+            "addressType": "CURRENT",
+            "street": "Acacia Avenue",
+            "street2": "Honeysuckle Lane",
+            "postTown": "London",
+            "postal": "SW4 0QL",
+            "stateProvinceCode": "CA",
+            "countryCode": "GBR"
+          },
+          {
+            "id": "MAINAPPADDRESS_2",
+            "addressType": "DELIVERY",
+            "street": "TEKA Avenue",
+            "street2": "Moon Lane",
+            "postTown": "London",
+            "postal": "SW4 0QL",
+            "stateProvinceCode": "CA",
+            "countryCode": "GBR"
+          }
+        ],
+        "telephones": [
+          {
+            "id": "M",
+            "number": "01234567890",
+            "internationalCode": "44",
+            "phoneIdentifier": "HOME"
+          }
+        ],
+        "emails": [
+          {
+            "id": "MAINAPPLICANTEMAIL_1",
+            "type": "HOME",
+            "email": "simon.frank@experian.com"
+          }
+        ]
+      },
+      {
+        "id": "CO-APPLICANT_MAINCONTACT_1",
+        "person": {
+          "typeOfPerson": "CO-APPLICANT",
+          "personIdentifier": "P12346",
+          "names": [
+            {
+              "id": "CO-APPLICANT_MAINPERSONNAME_1",
+              "type": "CURRENT",
+              "firstName": "NED",
+              "surName": "SMITH"
+            }
+          ]
+        },
+        "addresses": [
+          {
+            "id": "CO-APPLICANT_MAINAPPADDRESS_1",
+            "addressType": "CURRENT",
+            "street": "Acacia Avenue",
+            "street2": "Honeysuckle Lane",
+            "postTown": "London",
+            "postal": "SW4 0QL",
+            "stateProvinceCode": "CA",
+            "countryCode": "GBR"
+          }
+        ],
+        "telephones": [
+          {
+            "id": "CO-APPLICANT_MAINPHONE_1",
+            "number": "01234567890",
+            "internationalCode": "44",
+            "phoneIdentifier": "HOME"
+          }
+        ],
+        "emails": [
+          {
+            "id": "CO-APPLICANT_MAINMAIL_1",
+            "type": "HOME",
+            "email": "ned.frank@experian.com"
+          }
+        ]
+      }
+    ],
+    "application": {
+      "applicants": [
+        {
+          "id": "APPLICANT_1",
+          "contactId": "MAINCONTACT_1",
+          "type": "INDIVIDUAL",
+          "applicantType": "APPLICANT"
+        },
+        {
+          "id": "CO-APPLICANT_2",
+          "contactId": "CO-APPLICANT_MAINCONTACT_1",
+          "type": "INDIVIDUAL",
+          "applicantType": "CO_APPLICANT"
+        }
+      ]
+    },
+    "device": {
+      "id": "DEVICEID_1",
+      "ipAddress": null,
+      "ipMain": null
+    }
+  }
+}
