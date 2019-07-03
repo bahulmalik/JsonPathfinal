@@ -146,7 +146,7 @@ public class EntryController {
 
   private String parseInput(Map<String, Object> mapcrosscore, String input, Element element,
       Map<String, String> mapChange) {
-    val temp = JsonPath.parse(mapcrosscore).read(input);
+    String temp = JsonPath.parse(mapcrosscore).read(input);
     if (Optional.ofNullable(temp).isPresent()) {
       return Optional.ofNullable(element.getFlag())
           .map(StringUtils::trimToNull)
@@ -165,7 +165,7 @@ public class EntryController {
   }
 
 
-  private String checkTrueOrFalse( temp, Map<String, String> mapChange) {
+  private String checkTrueOrFalse( String temp, Map<String, String> mapChange) {
     Set<Entry<String, String>> entrySet = Optional.ofNullable(mapChange)
         .filter(stringStringMap -> !stringStringMap.isEmpty())
         .map(Map::entrySet)
