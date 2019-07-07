@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.jayway.jsonpath.JsonPath;
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -94,7 +96,7 @@ public class MainClass {
         .orElseThrow(() -> new MappingException("Empty list for conversion"));
     elementList
         .forEach(element -> {
-          ArrayList<String> list = new ArrayList<>();
+          ArrayList<JsonNode> list = new ArrayList<>();
           if (Optional.ofNullable(element.getConcat())
               .filter(concat -> !concat.isEmpty())
               .isPresent()) {
@@ -113,8 +115,9 @@ public class MainClass {
                     pojo.getChangeMap()));
               }
             });
+
             setJsonPointerValue(rootNode, JsonPointer.compile(element.getMapping()),
-                new TextNode(list.get(0) + "-" + list.get(1)));
+                new TextNode(list.get(0).textValue() + "-" + list.get(1).textValue()));
           } else if (Optional.ofNullable(element.getInput())
               .isPresent()) {
             if (element.getInput().contains("filter")) {
@@ -122,15 +125,17 @@ public class MainClass {
                   .stream()
                   .filter(entry -> element.getInput().contains(entry.getKey()))
                   .forEach(
-                      entry -> setJsonPointerValue(rootNode,
-                          JsonPointer.compile(element.getMapping()),
-                          new TextNode(parseInput(mapCrosscore, element.getInput(), entry,
-                              element, pojo.getChangeMap()))));
+                      entry -> {
+                        setJsonPointerValue(rootNode,
+                            JsonPointer.compile(element.getMapping()),
+                            parseInput(mapCrosscore, element.getInput(), entry, element,
+                                pojo.getChangeMap()));
+                      });
 
             } else {
-              setJsonPointerValue(rootNode, JsonPointer.compile(element.getMapping()), new TextNode(
-                  parseInput(mapCrosscore, element.getInput(), element,
-                      pojo.getChangeMap())));
+               setJsonPointerValue(rootNode, JsonPointer.compile(element.getMapping()),
+                  parseInput(mapCrosscore, element.getInput(), element, pojo.getChangeMap()));
+
             }
           } else {
             if (Optional.ofNullable(element.getConstant())
@@ -152,22 +157,42 @@ public class MainClass {
             () -> new MappingException("Empty filter map while input requires filter"));
   }
 
-  private String parseInput(Map<String, Object> mapcrosscore, String input,
+  private JsonNode parseInput(Map<String, Object> mapcrosscore, String input,
       Entry<String, String> entry, Element element, Map<String, String> mapChange) {
     JSONArray jsonArray = JsonPath.parse(mapcrosscore).read(entry.getValue());
     if (Optional.ofNullable(jsonArray.get(0)).isPresent()) {
       String str = (String) jsonArray.get(0);
       String input1 = input.replaceAll(entry.getKey(), "" + str + "");
       jsonArray = JsonPath.parse(mapcrosscore).read(input1);
-      String var = (String) (jsonArray.get(0));
-      return Optional.ofNullable(element.getFlag())
+      Optional<Object> read = Optional.ofNullable(jsonArray.get(0));
+      return getJsonNode(element, mapChange, read);
+    }
+    return null;
+  }
+
+  private JsonNode getJsonNode(Element element, Map<String, String> mapChange,
+      Optional<Object> read) {
+    JsonNodeFactory jsonNodeFactory = JsonNodeFactory.instance;
+    if (read.isPresent()) {
+      Object o = read.get();
+      if (o instanceof Map) {
+        return jsonNodeFactory.pojoNode(o);
+      } else if (o instanceof Collection) {
+        return jsonNodeFactory.textNode(o.toString());
+      } else if (o instanceof Number) {
+        return jsonNodeFactory.numberNode(((Number) o).doubleValue());
+      }
+
+      String temp = read.get().toString();
+      return jsonNodeFactory.textNode(Optional.ofNullable(element.getFlag())
           .map(StringUtils::trimToNull)
-          .map(s1 -> checkTrueOrFalse(var, mapChange))
-          .orElse(var);
+          .map(s1 -> checkTrueOrFalse(temp, mapChange))
+          .orElse(temp));
+
     } else {
       if (Optional.ofNullable(element.getDefaultValue())
           .isPresent()) {
-        return element.getDefaultValue();
+        return jsonNodeFactory.textNode(element.getDefaultValue());
       } else if (element.getMandatory()) {
         throw new MappingException("error while converting");
       }
@@ -175,24 +200,10 @@ public class MainClass {
     return null;
   }
 
-  private String parseInput(Map<String, Object> mapcrosscore, String input, Element element,
+  private JsonNode parseInput(Map<String, Object> mapcrosscore, String input, Element element,
       Map<String, String> mapChange) {
-    String temp = JsonPath.parse(mapcrosscore).read(input);
-    if (Optional.ofNullable(temp).isPresent()) {
-      return Optional.ofNullable(element.getFlag())
-          .map(StringUtils::trimToNull)
-          .map(s1 -> checkTrueOrFalse(temp, mapChange))
-          .orElse(temp);
-    } else {
-      if (Optional.ofNullable(element.getDefaultValue())
-          .isPresent()) {
-        return element.getDefaultValue();
-      } else if (element.getMandatory()) {
-        throw new MappingException("error while converting");
-      }
-    }
-
-    return null;
+    Optional<Object> read = Optional.ofNullable(JsonPath.parse(mapcrosscore).read(input));
+    return getJsonNode(element, mapChange, read);
   }
 
 
